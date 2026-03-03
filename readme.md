@@ -1,99 +1,97 @@
 # Домашнее задание по Docker
 
-## Задание 1: hub.docker.com 
+## Задание 1: FastAPI приложение с MySQL
 
+
+### 1. Создание Dockerfile.python (single stage)
 <p align="center">
+  <img src="screenshots2/dockerfile-single.png" alt="Dockerfile.python single stage" width="800"/>
   <br>
-  <em>https://hub.docker.com/r/ollrins/custom-nginx</em>
+  <em>Рисунок 1 - Создание Dockerfile.python с базовым образом python:3.12-slim и конструкцией COPY .</em>
 </p>
 
-## Задание 2: Запуск custom-nginx
-
+### 2. Создание .dockerignore
 <p align="center">
-  <img src="screenshots/task2-docker-ps.png" alt="Выполнение команд задания 2" width="900"/>
+  <img src="screenshots2/dockerignore.png" alt=".dockerignore файл" width="700"/>
   <br>
-  <em>Рисунок 1 - Запуск контейнера, переименование и проверка. Доступность страницы через curl</em>
+  <em>Рисунок 2 - Файл .dockerignore для исключения ненужных файлов</em>
 </p>
 
-
-
-## Задание 3: Изменение конфигурации nginx
-
+### 3. Сборка и тестирование single stage образа
 <p align="center">
-  <img src="screenshots/task3-attach.png" alt="docker attach" width="800"/>
+  <img src="screenshots2/build-single.png" alt="Сборка single stage образа" width="900"/>
   <br>
-  <em>Рисунок 2 - Подключение к контейнеру и остановка через Ctrl+C</em>
-  <em>Контейнер остановился, потому что мы послали сигнал остановки главному процессу (nginx), который был запущен как PID 1. Когда процесс PID 1 завершается, контейнер останавливается.</em>
+  <em>Рисунок 3 - Сборка образа командой docker build -f Dockerfile.python -t test-app .  Проверка работы приложения через curl http://localhost:5000 (получено предупреждение о неверном порте)</em>
 </p>
 
+### 4. Multistage сборка
 <p align="center">
-  <img src="screenshots/task3-edit-config.png" alt="Редактирование конфига" width="850"/>
+  <img src="screenshots2/dockerfile-multi.png" alt="Dockerfile.python multistage" width="800"/>
   <br>
-  <em>Рисунок 3 - Изменение порта с 80 на 81 через nano</em>
-  
-</p>
-
-<p align="center">
-  <img src="screenshots/task3-curl-inside.png" alt="Проверка внутри контейнера. Проверка с хоста" width="750"/>
-   <img src="screenshots/task3-edit-config2.png" alt="Проверка внутри контейнера. Проверка с хоста" width="750"/>
-  <br>
-  <em>Рисунок 4 - Проверка curl внутри контейнера (80 не работает, 81 работает). Проверка с хостовой машины (не работает)</em>
-  <em>Проблема: curl 80 не работает, Nginx внутри слушает порт 81, но Docker при запуске контейнера пробросил хост-порт 8080 на контейнер-порт 80 (так было в команде run). Теперь внутри контейнера порт 80 не слушается, поэтому внешний запрос падает в пустоту.</em>
+  <em>Рисунок 4 - Изменение Dockerfile.python на multistage сборку</em>
 </p>
 
 <p align="center">
-  <img src="screenshots/task3-curl-host.png" alt="Дополнительное задание" width="700"/>
+  <img src="screenshots2/build-multi.png" alt="Сборка multistage образа" width="900"/>
   <br>
-  <em>Рисунок 5 - Дополнительное задание</em>
+  <em>Рисунок 5 - Сборка multistage образа test-app-multi</em>
+</p>
+
+### 5. Запуск через docker-compose
+<p align="center">
+  <img src="screenshots2/compose-yaml.png" alt="compose.yaml файл" width="800"/>
+  <br>
+  <em>Рисунок 6 - Файл compose.yaml для запуска MySQL и приложения</em>
+</p>
+### 3.Проверка работы приложения через curl 
+<p align="center">
+  <img src="screenshots2/curl-5000.png" alt="Сборка single stage образа" width="900"/>
+  <br>
+  <em>Рисунок 7 -  Проверка работы приложения через curl http://localhost:5000 (получено предупреждение о неверном порте)</em>
 </p>
 
 
-## Задание 4: Общая папка между контейнерами
-
+### 6. ✨ Запуск с venv (без Docker)
 <p align="center">
-  <img src="screenshots/task4-create-dir.png" alt="Общая папка между контейнерами" width="700"/>
+  <img src="screenshots2/mysql-container.png" alt="Запуск MySQL контейнера" width="900"/>
   <br>
-  <em>Рисунок 6 - Создание рабочей директории. Запуск контейнера CentOS с volume. Запуск контейнера Debian с volume. Создание файла из контейнера CentOS. Создание файла на хостовой машине. Проверка файлов из контейнера Debian </em>
-</p>
-
-
-## Задание 5: Portainer и локальный registry
-
-<p align="center">
-  <img src="screenshots/task5-create-files.png" alt="Создание файлов" width="800"/>
-  <br>
-  <em>Рисунок 7 - Создание compose.yaml и docker-compose.yaml. Запуск docker compose up -d (только portainer). Добавление include в compose.yaml. Оба контейнера (portainer и registry) запущены </em>
-  <em> Был запущен compose.yaml, Docker Compose по умолчанию ищет файлы в порядке приоритета: compose.yaml (предпочтительнее), затем compose.yml, затем docker-compose.yaml, рекомендуется использовать compose.yaml как стандартное имя</em>
-</p>
-
-<p align="center">
-  <img src="screenshots/task5-compose.png" alt="Stack в Portainer" width="900"/>
-  <br>
-  <em>Рисунок 8 - compose.yaml</em>
+  <em>Рисунок 12 - Запуск MySQL в контейнере для локальной разработки. Создание и активация виртуального окружения, установка зависимостей. </em>
 </p>
 
 <p align="center">
-  <img src="screenshots/task5-push-to-registry.png" alt="Push в registry" width="850"/>
-   <img src="screenshots/task5-push.png" alt="Push в registry" width="850"/>
+  <img src="screenshots2/venv-run.png" alt="Запуск приложения через venv" width="900"/>
   <br>
-  <em>Рисунок 9 - Загрузка образа в локальный registry</em>
-</p>
-
-
-
-<p align="center">
-  <img src="screenshots/task5-portainer-inspect.png" alt="Inspect в Portainer" width="1000"/>
-  <br>
-  <em>Рисунок 10 - Просмотр Config контейнера (AppArmorProfile до Driver)</em>
+  <em>Рисунок 14 - Запуск приложения через uvicorn на порту 5001 (подключение к БД успешно)</em>
 </p>
 
 <p align="center">
-  <img src="screenshots/task5-warning.png" alt="Warning" width="800"/>
+  <img src="screenshots2/venv-curl.png" alt="Проверка через curl" width="800"/>
   <br>
-  <em>Рисунок 11 - Предупреждение об отсутствующем файле. Остановка проекта одной командой docker compose down</em>
-  <em>В compose.yaml есть директива include, которая ссылается на несуществующий файл docker-compose.yaml. Docker Compose предупреждает, что этот файл не найден и будет проигнорирован.</em>
+  <em>Рисунок 15 - Проверка работы приложения через curl (получено предупреждение)</em>
 </p>
 
+### 7. ✨ Добавление ENV переменной DB_TABLE
+<p align="center">
+  <img src="screenshots2/main-py-config.png" alt="Изменение конфигурации в main.py" width="850"/>
+  <br>
+  <em>Рисунок 16 - Добавление переменной db_table в секцию конфигурации</em>
+</p>
 
+<p align="center">
+  <img src="screenshots2/custom-table-start.png" alt="Запуск с кастомной таблицей" width="900"/>
+  <br>
+  <em>Рисунок 18 - Запуск приложения с DB_TABLE='my_custom_table' (таблица создана)</em>
+</p>
 
+<p align="center">
+  <img src="screenshots2/custom-table-curl.png" alt="Проверка с кастомной таблицей" width="800"/>
+  <br>
+  <em>Рисунок 19 - Проверка работы с кастомной таблицей через curl</em>
+</p>
 
+### 8. Итоговые результаты
+<p align="center">
+  <img src="screenshots2/works-5002.png" alt="Успешная работа на порту 5002" width="850"/>
+  <br>
+  <em>Рисунок 20 - Успешная работа приложения на порту 5002 с кастомной таблицей</em>
+</p>
